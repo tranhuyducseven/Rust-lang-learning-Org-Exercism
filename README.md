@@ -44,6 +44,9 @@ Compound types can group multiple values into one type. Rust has two primitive c
 
 - Array: 
 
+### 3.3 Function
+
+View at https://learning-rust.github.io/
 
 
 
