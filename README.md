@@ -48,8 +48,132 @@ Compound types can group multiple values into one type. Rust has two primitive c
 
 View at https://learning-rust.github.io/
 
+### 3.4 Operator
+- Type Casting Operator:
+
+  `let a = 15;`
+  
+  `let b = (a as f64) / 2.0; //7.5`
+  
+- String concatenation:
+  ```rust
+      let (s1, s2) = ("some", "thing"); // both &str
+      // All bellow codes return `String`; something
+
+      let s = String::from(s1) + s2; // String + &str
+
+      let mut s = String::from(s1); // String
+      s.push_str(s2); // + &str
+
+      let s = format!("{}{}", s1, s2); // &str/String + &str/String
+
+      let s = [s1, s2].concat(); // &str or String array
+  ```
+
+### 3.5 Control flow
+- match
+  - ex1:
+  ```rust
+        let tshirt_width = 20;
+        let tshirt_size = match tshirt_width {
+          16 => "S", // check 16
+          17 | 18 => "M", // check 17 and 18
+          19 ..= 21 => "L", // check from 19 to 21 (19,20,21)
+          22 => "XL",
+          _ => "Not Available",
+        };
+        println!("{}", tshirt_size); // L
+
+  ```
+  - ex2:
+  ```rust
+        let marks_paper_a: u8 = 25;
+        let marks_paper_b: u8 = 30;
+        let output = match (marks_paper_a, marks_paper_b) {
+          (50, 50) => "Full marks for both papers",
+          (50, _) => "Full marks for paper A",
+          (_, 50) => "Full marks for paper B",
+          (x, y) if x > 25 && y > 25 => "Good",
+          (_, _) => "Work hard"
+        };
+
+        println!("{}", output); // Work hard
+
+  ```
+- loop
+  - **loop**
+  - **while**
+  - **for**
+  > can set label for loop
+  
+  
+
+## Chapter 4 Beyond the Basic
+### 4.1 Vector
+- Create empty vector
+  ```rust
+        let mut a = Vec::new(); //1.With new() keyword
+        let mut b = vec![]; //2.Using the vec! macro        
+  ```
+- With data types
+  ```rust
+        let mut a2: Vec<i32> = Vec::new();
+        let mut b2: Vec<i32> = vec![];
+        let mut b3 = vec![1i32, 2, 3];//Suffixing 1st value with data type
+
+        let mut b4 = vec![1, 2, 3];
+        let mut b5: Vec<i32> = vec![1, 2, 3];
+        let mut b6  = vec![1i32, 2, 3];
+        let mut b7 = vec![0; 10]; //Ten zeroes
+  ```
+- Access and change data
+  ```rust
+        //Accessing and changing existing data
+        let mut c = vec![5, 4, 3, 2, 1];
+        c[0] = 1;
+        c[1] = 2;
+        //c[6] = 2; Cannot assign values this way, index out of bounds
+        println!("{:?}", c); //[1, 2, 3, 2, 1]
+
+        //push and pop
+        let mut d: Vec<i32> = Vec::new();
+        d.push(1); //[1] : Add an element to the end
+        d.push(2); //[1, 2]
+        d.pop(); //[1] : : Remove an element from the end
 
 
+        // 🔎 Capacity and reallocation
+        let mut e: Vec<i32> = Vec::with_capacity(10);
+        println!("Length: {}, Capacity : {}", e.len(), e.capacity()); //Length: 0, Capacity : 10
+
+        // These are all done without reallocating...
+        for i in 0..10 {
+            e.push(i);
+        }
+        // ...but this may make the vector reallocate
+        e.push(11);
+  ```
+  
+⭐️ Mainly a vector represent 3 things,
+
+    - A pointer to the data
+    - No of elements currently have(length)
+    - Capacity (Amount of space allocated for any future elements).
+If the length of a vector exceeds its capacity, its capacity will be increased automatically. But its elements will be reallocated(which can be slow). So always use Vec::with_capacity whenever it’s possible.
+
+💯 Vectors can be used with iterators in three ways,
+  ```rust
+        let mut v = vec![1, 2, 3, 4, 5];
+        for i in &v {
+            println!("A reference to {}", i);
+        }
+        for i in &mut v {
+            println!("A mutable reference to {}", i);
+        }
+        for i in v {
+            println!("Take ownership of the vector and its element {}", i);
+        }
+  ```
 
 
 
