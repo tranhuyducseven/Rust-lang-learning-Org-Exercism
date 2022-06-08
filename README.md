@@ -37,12 +37,12 @@ Rust has four primary scalar types: **integers**, **floating-point numbers**, **
 Rust also has two primitive types for floating-point numbers, which are numbers with decimal points. Rust’s floating-point types are `f32` and `f64`, which are 32 bits and 64 bits in size, respectively. The default type is f64 because on modern CPUs it’s roughly the same speed as f32 but is capable of more precision. All floating-point types are signed.
 
 **Compound Types**
+
 Compound types can group multiple values into one type. Rust has two primitive compound types: tuples and arrays.
 
--Tuples
-A tuple is a general way of grouping together a number of values with a variety of types into one compound type. Tuples have a fixed length: once declared, they cannot grow or shrink in size.
+- Tuples: A tuple is a general way of grouping together a number of values with a variety of types into one compound type. Tuples have a fixed length: once declared, they cannot grow or shrink in size.
 
--Array
+- Array: 
 
 
 
