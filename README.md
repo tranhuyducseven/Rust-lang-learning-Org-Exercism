@@ -175,6 +175,185 @@ If the length of a vector exceeds its capacity, its capacity will be increased a
         }
   ```
 
+### 4.2 Struct
+There are 3 variants of structs: **C-struct, Tuple, Unit sctruct**
+
+- C-like structs
+  - One or more comma-separated name:value pairs  
+  - Brace-enclosed list  
+  - Similar to classes (without its methods) in OOP languages  
+  - Because fields have names, we can access them through dot notation
+ 
+- Tuple structs
+  - One or more comma-separated values  
+  - A parenthesized list like tuples  
+  - Looks like a named tuples
+  
+- Unit structs
+  - A struct with no members at all  
+  - It defines a new type but it resembles an empty tuple, ()  
+  - Rarely in use, useful with generics
+
+
+⭐️C-like structs
+  ```rust
+  // Struct Declaration
+        struct Color {
+            red: u8,
+            green: u8,
+            blue: u8
+        }
+
+        fn main() {
+          // Creating an instance
+          let black = Color {red: 0, green: 0, blue: 0};
+
+          // Accessing its fields using dot notation
+          println!("Black = rgb({}, {}, {})", black.red, black.green, black.blue); //Black = rgb(0, 0, 0)
+
+          // Structs are immutable by default, use `mut` to make it mutable but doesn't support field level mutability
+          let mut link_color = Color {red: 0,green: 0,blue: 255};
+          link_color.blue = 238;
+          println!("Link Color = rgb({}, {}, {})", link_color.red, link_color.green, link_color.blue); //Link Color = rgb(0, 0, 238)
+
+          // Copy elements from another instance
+          let blue = Color {blue: 255, .. link_color};
+          println!("Blue = rgb({}, {}, {})", blue.red, blue.green, blue.blue); //Blue = rgb(0, 0, 255)
+
+          // Destructure the instance using a `let` binding, this will not destruct blue instance
+          let Color {red: r, green: g, blue: b} = blue;
+          println!("Blue = rgb({}, {}, {})", r, g, b); //Blue = rgb(0, 0, 255)
+
+          // Creating an instance via functions & accessing its fields
+          let midnightblue = get_midnightblue_color();
+          println!("Midnight Blue = rgb({}, {}, {})", midnightblue.red, midnightblue.green, midnightblue.blue); //Midnight Blue = rgb(25, 25, 112)
+
+          // Destructure the instance using a `let` binding
+          let Color {red: r, green: g, blue: b} = get_midnightblue_color();
+          println!("Midnight Blue = rgb({}, {}, {})", r, g, b); //Midnight Blue = rgb(25, 25, 112)
+        }
+
+        fn get_midnightblue_color() -> Color {
+            Color {red: 25, green: 25, blue: 112}
+        }  
+  ```
+⭐️ Tuple struct:  When a tuple struct has only one element, we call it newtype pattern. Because it helps to create a new type.
+
+  ```rust
+        struct Color(u8, u8, u8);
+        struct Kilometers(i32);
+
+        fn main() {
+          // Creating an instance
+          let black = Color(0, 0, 0);
+
+          // Destructure the instance using a `let` binding, this will not destruct black instance
+          let Color(r, g, b) = black;
+          println!("Black = rgb({}, {}, {})", r, g, b); //black = rgb(0, 0, 0);
+
+          // Newtype pattern
+          let distance = Kilometers(20);
+          // Destructure the instance using a `let` binding
+          let Kilometers(distance_in_km) = distance;
+          println!("The distance: {} km", distance_in_km); //The distance: 20 km
+        }
+  ```
+  
+⭐️ Unit struct: rarely use.
+
+### 4.3 Enum
+  
+  ```rust
+  
+        enum FlashMessage {
+          Success, // A unit variant
+          Warning{ category: i32, message: String }, // A struct variant
+          Error(String) // A tuple variant
+        }
+
+        fn main() {
+          let mut form_status = FlashMessage::Success;
+          print_flash_message(form_status);
+
+          form_status = FlashMessage::Warning {category: 2, message: String::from("Field X is required")};
+          print_flash_message(form_status);
+
+          form_status = FlashMessage::Error(String::from("Connection Error"));
+          print_flash_message(form_status);
+        }
+
+        fn print_flash_message(m : FlashMessage) {
+          // Pattern matching with enum
+          match m {
+            FlashMessage::Success =>
+              println!("Form Submitted correctly"),
+            FlashMessage::Warning {category, message} => // Destructure, should use same field names
+              println!("Warning : {} - {}", category, message),
+            FlashMessage::Error(msg) =>
+              println!("Error : {}", msg)
+          }
+        }
+  ```
+  
+### 4.4 View at https://learning-rust.github.io/docs/b5.impls_and_traits.html
+
+## Chapter 5 The Tough Part
+### 5.1 Ownership
+1. Copy Type
+  - Bound resources are made a copy and assign or pass it to the function.
+  - The ownership state of the original bindings is set to “copied” state.
+  - Mostly Primitive types
+2. Move type
+  - Bound resources are moved to the new variable binding and we can not access the original variable binding anymore.
+  - The ownership state of the original bindings is set to “moved” state.
+  - Non-primitive types
+
+### 5.2 Borrowing
+
+***Shared & Mutable borrowings***
+⭐️ There are two types of Borrowing,
+
+1. Shared Borrowing (&T)
+  - A piece of data can be borrowed by a single or multiple users, but data should not be altered. 
+2. Mutable Borrowing (&mut T)
+  - A piece of data can be borrowed and altered by a single user, but the data should not be accessible for any other users at that time.
+
+***Rules for borrowings***
+There are very important rules regarding borrowing
+- One piece of data can be borrowed either as a shared borrow or as a mutable borrow at a given time. But not both at the same time.
+- Borrowing applies for both copy types and move types.
+- The concept of Liveness ↴
+
+  ```rust
+        fn main() {
+        let mut a = vec![1, 2, 3];
+        let b = &mut a;  //  &mut borrow of `a` starts here
+                         //  ⁝
+        // some code     //  ⁝
+        // some code     //  ⁝
+      }                  //  &mut borrow of `a` ends here
+
+
+        fn main() {
+          let mut a = vec![1, 2, 3];
+          let b = &mut a;  //  &mut borrow of `a` starts here
+          // some code
+
+          println!("{:?}", a); // trying to access `a` as a shared borrow, so giving an error
+        }                  //  &mut borrow of `a` ends here
+
+
+        fn main() {
+          let mut a = vec![1, 2, 3];
+          {
+            let b = &mut a;  //  &mut borrow of `a` starts here
+            // any other code
+          }                  //  &mut borrow of `a` ends here
+
+          println!("{:?}", a); // allow borrowing `a` as a shared borrow
+        }
+  ```
+
 
 
 
