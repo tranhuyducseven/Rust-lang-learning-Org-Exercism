@@ -355,6 +355,43 @@ There are very important rules regarding borrowing
   ```
 
 
+### 5.3 Lifetimes
+- ***What is Lifetime?***
+In Rust,
 
+A resource can only have one owner at a time. When it goes out of the scope, Rust removes it from the Memory.
+When we want to reuse the same resource, we are referencing it/ borrowing its content.
+When dealing with references, we have to specify lifetime annotations to provide instructions for the compiler to set how long those referenced resources should be alive.
 
+⭐ But because of lifetime annotations make the code more verbose, in order to make common patterns more ergonomic, Rust allows lifetimes to be elided/omitted in fn definitions. In this case, the compiler assigns lifetime annotations implicitly.
+
+- ***Usage***
+- Lifetimes are denoted with an apostrophe. 
+- By convention, a lowercase letter is used for naming. Usually starts with 'a and follows alphabetic order when we need to add multiple lifetime annotations.
+
+1. On Function Declaration
+  ```rust
+        // No inputs, return a reference
+        fn function<'a>() -> &'a str {}
+
+        // Single input
+        fn function<'a>(x: &'a str) {}
+
+        // Single input and output, both have the same lifetime
+        // The output should live at least as long as input exists
+        fn function<'a>(x: &'a str) -> &'a str {}
+
+        // Multiple inputs, only one input and the output share same lifetime
+        // The output should live at least as long as y exists
+        fn function<'a>(x: i32, y: &'a str) -> &'a str {}
+
+        // Multiple inputs, both inputs and the output share same lifetime
+        // The output should live at least as long as x and y exist
+        fn function<'a>(x: &'a str, y: &'a str) -> &'a str {}
+
+        // Multiple inputs, inputs can have different lifetimes 🔎
+        // The output should live at least as long as x exists
+        fn function<'a, 'b>(x: &'a str, y: &'b str) -> &'a str {}
+  ```
+  
 
